@@ -6,6 +6,7 @@ import random
 import hashlib
 import re
 import requests
+import zipfile
 
 UPLOAD_FOLDER = '/app/uploads'
 ALLOWED_EXTENSIONS = {'zip'}
@@ -22,6 +23,13 @@ def allowed_file(filename):
 def hello():
     return 'Init Test'
 
+'''
+Todo
+- 날짜 정보 추가
+- 파일 저장 경로
+- 파일 이름
+- 파일 크기
+'''
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
@@ -38,6 +46,9 @@ def upload():
             filename = secure_filename(file.filename)
             filename = filename.split('.zip')[0] + '-' + hashlib.sha256(str(random.getrandbits(256)).encode('utf-8')).hexdigest()[:8] + '.zip'
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            with zipfile.ZipFile(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'r') as zip_ref:
+                zip_ref.extractall(os.path.join(app.config['UPLOAD_FOLDER'], filename.split('.zip')[0]))
+
             resp = make_response(jsonify({'message': 'OK'}), 200)
             return resp
         else:
@@ -64,6 +75,8 @@ def upload():
             filename = f'{user}-{repo}-{hashlib.sha256(str(random.getrandbits(256)).encode("utf-8")).hexdigest()[:8]}.zip'
             with open(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'wb') as f:
                 f.write(api_res.content)
+            with zipfile.ZipFile(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'r') as zip_ref:
+                zip_ref.extractall(os.path.join(app.config['UPLOAD_FOLDER'], filename.split('.zip')[0]))
             resp = make_response(jsonify({'message': 'OK'}), 200)
             return resp
         else:
