@@ -28,10 +28,10 @@ sequenceDiagram
 
 ## Todo
 - [x] 프로젝트 기획
-- [ ] 어떤 Framework 쓸지 선정
+- [x] 어떤 Framework 쓸지 선정
 - [ ] CodeQL 쿼리 탐지할 CWE 선정
 - [ ] CodeQL 쿼리 작성
-- [ ] 프론트
+- [x] 프론트
 - [ ] 백엔드 구현
 - [ ] CWE 테스트
 - [ ] CVE 테스트 선정

@@ -13,8 +13,14 @@ from models import db, FileStatus
 from subprocess import Popen
 from datetime import datetime, timedelta, timezone
 
-UPLOAD_FOLDER = '/app/uploads'
+# remote
+UPLOAD_FOLDER = '/app/uploads/'
 DB_PATH = '/app/codeql-db/'
+
+# local
+# UPLOAD_FOLDER = '/root/VulnFinder-CodeQL/src/uploads/'
+# DB_PATH = '/root/VulnFinder-CodeQL/src/codeql-db/'
+
 ALLOWED_EXTENSIONS = {'zip'}
 KST = timezone(timedelta(hours=9))
 
@@ -63,7 +69,11 @@ def allowed_file(filename):
 
 def create_db(dirname):
     try:
-        command = f'codeql database create --language=c {DB_PATH}{dirname} --source-root {UPLOAD_FOLDER}{dirname}'
+        command = f'codeql database create {DB_PATH}{dirname} --source-root {UPLOAD_FOLDER}{dirname} --language=cpp --command="cmake . && make"'
+        command = f'codeql database create {DB_PATH}{dirname} --source-root {UPLOAD_FOLDER}{dirname} --language=cpp'
+        print(command)
+        # command = f'codeql database create --language=python {DB_PATH}{dirname} --source-root {UPLOAD_FOLDER}{dirname}'
+        # command = f'codeql database create --language=csharp {DB_PATH}{dirname} --source-root {UPLOAD_FOLDER}{dirname}'
         process = Popen(command, shell=True)
         return process
     except Exception as e:
@@ -150,13 +160,14 @@ def codeql_create():
         if db_get_file_status_by_name(filename) == 1:
             return jsonify({'message': f'CodeQL for {filename} already exists'}), 400
         db_update_file_status_by_name(filename, 1)
-        # process = create_db(filename)
+        process = create_db(filename)
 
         return jsonify({'message': f'Creating CodeQL for {filename}'})
     return jsonify({'message': 'No filename provided'}), 400
 
 @app.route('/codeql-analyze')
 def codeql_analyze():
+    # database analyze --format csv --output=results.csv --search-path=/home/runner/work/CodeQL-Test/CodeQL-Test --threads=4 --ram=16G --timeout=60m
     return 'CodeQL Analyze Test'
 
 @app.route('/status')
@@ -169,4 +180,4 @@ def filelist():
     return render_template('file_list.html', files=files)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True, threaded=False, processes=2)
+    app.run(host='0.0.0.0', port=5001, debug=True, threaded=False, processes=2)
