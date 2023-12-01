@@ -7,29 +7,62 @@ import hashlib
 import re
 import requests
 import zipfile
+# from dotenv import load_dotenv
+from flask_sqlalchemy import SQLAlchemy
+from models import db, FileStatus
+from subprocess import Popen
+from datetime import datetime
 
 UPLOAD_FOLDER = '/app/uploads'
+DB_PATH = '/app/codeql-db/'
 ALLOWED_EXTENSIONS = {'zip'}
 
+# load_dotenv()
 app = Flask(__name__)
+
+db_file = os.path.join(os.path.dirname(__file__), 'codeql.db')
+db_uri = 'sqlite:///{}'.format(db_file)
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db.init_app(app)
+with app.app_context():
+    db.create_all()
+
 cors = CORS(app, resources={r"/upload": {"origins": "https://api.github.com"}})
+
+def db_uplaod_file(name, status, date, size, path):
+    file_status = FileStatus(name=name, status=status, date=date, size=size, path=path)
+    db.session.add(file_status)
+    db.session.commit()
+
+def db_get_file_by_id(id):
+    file_status = FileStatus.query.filter_by(id=id).first()
+    return file_status
+
+def db_delete_file_by_id(id):
+    file_status = FileStatus.query.filter_by(id=id).first()
+    db.session.delete(file_status)
+    db.session.commit()
 
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def create_db(dirname):
+    try:
+        command = f'codeql database create --language=c {DB_PATH}{dirname} --source-root {UPLOAD_FOLDER}{dirname}'
+        process = Popen(command, shell=True)
+        return process
+    except Exception as e:
+        raise e
+
 @app.route('/')
 def hello():
     return 'Init Test'
 
-'''
-Todo
-- 날짜 정보 추가
-- 파일 저장 경로
-- 파일 이름
-- 파일 크기
-'''
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     if request.method == 'POST':
@@ -48,6 +81,14 @@ def upload():
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             with zipfile.ZipFile(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'r') as zip_ref:
                 zip_ref.extractall(os.path.join(app.config['UPLOAD_FOLDER'], filename.split('.zip')[0]))
+
+            db_uplaod_file(
+                filename.split('.zip')[0], 
+                0, 
+                datetime.now(), 
+                os.path.getsize(os.path.join(app.config['UPLOAD_FOLDER'], filename)),
+                os.path.join(app.config['UPLOAD_FOLDER'],
+                filename.split('.zip')[0]))
 
             resp = make_response(jsonify({'message': 'OK'}), 200)
             return resp
@@ -77,6 +118,15 @@ def upload():
                 f.write(api_res.content)
             with zipfile.ZipFile(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'r') as zip_ref:
                 zip_ref.extractall(os.path.join(app.config['UPLOAD_FOLDER'], filename.split('.zip')[0]))
+            
+            db_uplaod_file(
+                filename.split('.zip')[0], 
+                0, 
+                datetime.now(), 
+                os.path.getsize(os.path.join(app.config['UPLOAD_FOLDER'], filename)),
+                os.path.join(app.config['UPLOAD_FOLDER'],
+                filename.split('.zip')[0]))
+
             resp = make_response(jsonify({'message': 'OK'}), 200)
             return resp
         else:
@@ -97,4 +147,4 @@ def status():
     return 'Status Test'
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=False, threaded=False, processes=2)
+    app.run(host='0.0.0.0', port=5000, debug=True, threaded=False, processes=2)

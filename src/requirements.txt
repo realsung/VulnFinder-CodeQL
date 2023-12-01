@@ -2,3 +2,5 @@ Flask
 flask-cors
 Werkzeug
 requests
+python-dotenv
+Flask-SQLAlchemy
