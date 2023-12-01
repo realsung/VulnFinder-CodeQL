@@ -39,9 +39,18 @@ def db_uplaod_file(name, status, date, size, path):
     db.session.add(file_status)
     db.session.commit()
 
-def db_get_file_by_id(id):
-    file_status = FileStatus.query.filter_by(id=id).first()
-    return file_status
+# def db_get_file_status(id) -> FileStatus:
+#     file_status = FileStatus.query.filter_by(id=id).first()
+#     return file_status
+
+def db_get_file_status_by_name(name) -> int:
+    file_status = FileStatus.query.filter_by(name=name).first()
+    return file_status.status
+
+def db_update_file_status_by_name(name, status):
+    file_status = FileStatus.query.filter_by(name=name).first()
+    file_status.status = status
+    db.session.commit()
 
 def db_delete_file_by_id(id):
     file_status = FileStatus.query.filter_by(id=id).first()
@@ -98,8 +107,6 @@ def upload():
             return resp
         
     elif request.method == 'GET':
-        # id = url
-        # github api https://api.github.com/repos/realsung/VulnFinder-CodeQL/zipball
         url = request.args.get('url')
         if not url:
             return render_template('upload.html')
@@ -135,9 +142,18 @@ def upload():
             return resp
 
 
-@app.route('/codeql-create')
+@app.route('/codeql-create', methods=['POST'])
 def codeql_create():
-    return 'CodeQL Create Test'
+    data = request.json
+    filename = data.get('filename')
+    if filename:
+        if db_get_file_status_by_name(filename) == 1:
+            return jsonify({'message': f'CodeQL for {filename} already exists'}), 400
+        db_update_file_status_by_name(filename, 1)
+        # process = create_db(filename)
+
+        return jsonify({'message': f'Creating CodeQL for {filename}'})
+    return jsonify({'message': 'No filename provided'}), 400
 
 @app.route('/codeql-analyze')
 def codeql_analyze():
@@ -149,10 +165,8 @@ def status():
 
 @app.route('/list')
 def filelist():
-    a = ""
-    for file in FileStatus.query.all():
-        a += f'{file.name} {file.status} {file.date} {file.size} {file.path}<br>'
-    return a
+    files = FileStatus.query.all()
+    return render_template('file_list.html', files=files)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True, threaded=False, processes=2)
