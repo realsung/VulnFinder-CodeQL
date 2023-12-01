@@ -19,9 +19,8 @@ sequenceDiagram
 ```
 
 ## Development Spec
-- ??? : 프론트엔드 개발 사용
-- ??? : 백엔드 개발 사용 (NodeJs+Express or Flask)
-- CodeQL
+- Flask : 백엔드 개발 사용
+- CodeQL : 정적 코드 분석 엔진 사용
 - git : 코드 버전 관리 사용
 - Docker : 컨테이너 배포 사용
 - Github Actions : CI/CD 사용
@@ -29,7 +28,7 @@ sequenceDiagram
 
 ## Todo
 - [x] 프로젝트 기획
-- [ ] 프론트, 백엔드 어떤 Framework 쓸지 선정
+- [ ] 어떤 Framework 쓸지 선정
 - [ ] CodeQL 쿼리 탐지할 CWE 선정
 - [ ] CodeQL 쿼리 작성
 - [ ] 프론트
