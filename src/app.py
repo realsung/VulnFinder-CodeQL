@@ -11,11 +11,12 @@ import zipfile
 from flask_sqlalchemy import SQLAlchemy
 from models import db, FileStatus
 from subprocess import Popen
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 UPLOAD_FOLDER = '/app/uploads'
 DB_PATH = '/app/codeql-db/'
 ALLOWED_EXTENSIONS = {'zip'}
+KST = timezone(timedelta(hours=9))
 
 # load_dotenv()
 app = Flask(__name__)
@@ -118,11 +119,11 @@ def upload():
                 f.write(api_res.content)
             with zipfile.ZipFile(os.path.join(app.config['UPLOAD_FOLDER'], filename), 'r') as zip_ref:
                 zip_ref.extractall(os.path.join(app.config['UPLOAD_FOLDER'], filename.split('.zip')[0]))
-            
+
             db_uplaod_file(
                 filename.split('.zip')[0], 
                 0, 
-                datetime.now(), 
+                datetime.now(tz=KST), 
                 os.path.getsize(os.path.join(app.config['UPLOAD_FOLDER'], filename)),
                 os.path.join(app.config['UPLOAD_FOLDER'],
                 filename.split('.zip')[0]))
@@ -145,6 +146,13 @@ def codeql_analyze():
 @app.route('/status')
 def status():
     return 'Status Test'
+
+@app.route('/list')
+def filelist():
+    a = ""
+    for file in FileStatus.query.all():
+        a += f'{file.name} {file.status} {file.date} {file.size} {file.path}<br>'
+    return a
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True, threaded=False, processes=2)
