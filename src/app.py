@@ -63,7 +63,7 @@ def db_delete_file_by_id(id):
     db.session.delete(file_status)
     db.session.commit()
 
-def allowed_file(filename):
+def allowed_file(filename) -> bool:
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
@@ -81,7 +81,7 @@ def create_db(dirname):
 
 @app.route('/')
 def hello():
-    return 'Init Test'
+    return render_template('index.html')
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -110,8 +110,9 @@ def upload():
                 os.path.join(app.config['UPLOAD_FOLDER'],
                 filename.split('.zip')[0]))
 
-            resp = make_response(jsonify({'message': 'OK'}), 200)
-            return resp
+            return redirect(url_for('list'))
+            # resp = make_response(jsonify({'message': 'OK'}), 200)
+            # return resp
         else:
             resp = make_response(jsonify({'message': 'Invalid file extension'}), 400)
             return resp
@@ -145,8 +146,9 @@ def upload():
                 os.path.join(app.config['UPLOAD_FOLDER'],
                 filename.split('.zip')[0]))
 
-            resp = make_response(jsonify({'message': 'OK'}), 200)
-            return resp
+            return redirect(url_for('list'))
+            # resp = make_response(jsonify({'message': 'OK'}), 200)
+            # return resp
         else:
             resp = make_response(jsonify({'message': 'Error'}), 400)
             return resp
