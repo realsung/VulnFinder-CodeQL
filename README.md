@@ -23,18 +23,29 @@ sequenceDiagram
 - CodeQL : 정적 코드 분석 엔진 사용
 - git : 코드 버전 관리 사용
 - Docker : 컨테이너 배포 사용
-- Github Actions : CI/CD 사용
-- Juliet C/C++ 1.3 - [NIST Software Assurance Reference Dataset](https://samate.nist.gov/SARD/test-suites) : 코드 테스트 데이터셋 사용
+- Javscript CWE 데이터베이스 사용 - [Link](https://github.com/realsung/VulnFinder-CodeQL/tree/main/src/javascript-cwe) : CWE 테스트
+- Pixi - [Link](https://github.com/DevSlop/Pixi) : 취약점 테스트
+
+## Feture
+- 소스코드 .zip파일 업로드 방식, Github Repository 링크 입력 방식 두가지 존재
+<img width="928" alt="스크린샷 2023-12-02 222336" src="https://github.com/realsung/VulnFinder-CodeQL/assets/32904385/a63878b8-db0b-4230-80f3-fd1ae5ffda58">
+
+- 업로드한 파일에 대한 정보로, CodeQL DB 생성, 분석을 수행할 수 있다.
+- Result는 아직 미완성(Todo: DB 외래키 지정으로 각 id를 처리해야함)
+<img width="1493" alt="스크린샷 2023-12-02 222503" src="https://github.com/realsung/VulnFinder-CodeQL/assets/32904385/253d23c9-fd59-4c7a-a79d-0890e2fb0a23">
+
+- Report 페이지로 CodeQL Analysis로 나온 취약점 이름, 설명, 이유, 경로, 어느 라인에서 취약점이 발생하는지 등의 정보를 확인할 수 있다.
+<img width="1519" alt="스크린샷 2023-12-02 222538" src="https://github.com/realsung/VulnFinder-CodeQL/assets/32904385/adce0fab-bae2-4bca-91f0-9f2185fa9ae6">
 
 ## Todo
 - [x] 프로젝트 기획
 - [x] 어떤 Framework 쓸지 선정
-- [ ] CodeQL 쿼리 탐지할 CWE 선정
-- [ ] CodeQL 쿼리 작성
+- [x] CodeQL 쿼리 탐지할 CWE 선정
+- [x] CodeQL 쿼리 작성
 - [x] 프론트
-- [ ] 백엔드 구현
-- [ ] CWE 테스트
-- [ ] CVE 테스트 선정
+- [x] 백엔드 구현
+- [x] CWE 테스트
+- [x] CWE기반 취약점 텥스트
 
 ## CWE
 - [CWE coverage for Python](https://codeql.github.com/codeql-query-help/codeql-cwe-coverage/)
@@ -46,7 +57,8 @@ sequenceDiagram
 - [Test Set #2](https://github.com/AlexAltea/codeql-python)
 
 ## Javascript
-
+- [Test Set #1](https://github.com/DevSlop/Pixi)
+- [Test Set #2](https://github.com/github/codeql/tree/main/javascript/ql/src/Security)
 
 ## Reference
 - [Code security documentation](https://docs.github.com/en/code-security)
