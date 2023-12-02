@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>List</title>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            margin: 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        button {
+            background-color: #008CBA;
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:disabled {
+            background-color: #cccccc;
+            color: #666666;
+            cursor: default;
+        }
+    </style>
+</head>
+<body>
+    <h1>File List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>isAnalysis</th>
+                <th>Date</th>
+                <th>Size</th>
+                <th>Path</th>
+                <th>Create</th>
+                <th>Analysis</th>
+                <th>Result</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for file in files %}
+                <tr id="file-{{ file.id }}">
+                    <td>{{ file.name }}</td>
+                    <td>{{ file.status }}</td>
+                    <td>{{ file.isAnalysis }}</td>
+                    <td>{{ file.date }}</td>
+                    <td>{{ file.size }}</td>
+                    <td>{{ file.path }}</td>
+                    <td>
+                        {% if file.status == 0 %}
+                            <button onclick="createCodeQL('{{ file.id }}', '{{ file.name }}')">Create CodeQL</button>
+                        {% else %}
+                            <button disabled>CodeQL Created</button>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if file.status == 1 and file.isAnalysis == 0 %}
+                            <button onclick="analysisCodeQL('{{ file.id }}', '{{ file.name }}')">CodeQL Analysis</button>
+                        {% else %}
+                            <button disabled>CodeQL Analysis</button>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if file.status == 1 and file.isAnalysis == 1 %}
+                            <!-- <a href="/result/{{ file.id }}">Result</a> -->
+                            <button onclick="window.open('/result/{{ file.name }}')">Result</button>
+                        {% else %}
+                            <button disabled>Result</button>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function createCodeQL(fileId, fileName) {
+            $.ajax({
+                url: '/codeql-create',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ filename: fileName }),
+                success: function(response) {
+                    alert(response.message);
+                    $('#file-' + fileId + ' button').prop('disabled', true);
+                },
+                error: function(error) {
+                    alert(error.responseJSON.message);
+                }
+            });
+        }
+        function analysisCodeQL(fileId, fileName) {
+            $.ajax({
+                url: '/codeql-analysis',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ filename: fileName }),
+                success: function(response) {
+                    alert(response.message);
+                    $('#file-' + fileId + ' button').prop('disabled', true);
+                },
+                error: function(error) {
+                    alert(error.responseJSON.message);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
