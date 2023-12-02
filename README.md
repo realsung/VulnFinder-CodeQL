@@ -1,7 +1,8 @@
 # VulnFinder-CodeQL Project
 
 ## Summary
-- CodeQL을 이용해 C언어 기반 소스코드 취약점 찾기 플랫폼 구현
+- CodeQL을 이용해 프로그래밍 언어 기반 소스코드 취약점 찾기 플랫폼 구현
+- 현재 지원 언어 : JavaScript (추후 추가 예정)
 
 ```mermaid
 sequenceDiagram
@@ -20,11 +21,12 @@ sequenceDiagram
 
 ## Development Spec
 - Flask : 백엔드 개발 사용
+- DB : SQLAlchemy
 - CodeQL : 정적 코드 분석 엔진 사용
 - git : 코드 버전 관리 사용
 - Docker : 컨테이너 배포 사용
-- Javscript CWE 데이터베이스 사용 - [Link](https://github.com/realsung/VulnFinder-CodeQL/tree/main/src/javascript-cwe) : CWE 테스트
-- Pixi - [Link](https://github.com/DevSlop/Pixi) : 취약점 테스트
+- [Javscript CWE](https://github.com/realsung/VulnFinder-CodeQL/tree/main/src/javascript-cw) 데이터베이스 사용 : CWE 테스트
+- [Pixi](https://github.com/DevSlop/Pixi) : 취약점 테스트
 
 ## Feture
 - 소스코드 .zip파일 업로드 방식, Github Repository 링크 입력 방식 두가지 존재
@@ -37,6 +39,17 @@ sequenceDiagram
 - Report 페이지로 CodeQL Analysis로 나온 취약점 이름, 설명, 이유, 경로, 어느 라인에서 취약점이 발생하는지 등의 정보를 확인할 수 있다.
 <img width="1519" alt="스크린샷 2023-12-02 222538" src="https://github.com/realsung/VulnFinder-CodeQL/assets/32904385/adce0fab-bae2-4bca-91f0-9f2185fa9ae6">
 
+## Pages
+- / : Main 페이지
+- /upload : 소스코드 업로드 페이지
+- /list : 업로드된 파일 리스팅, CodeQL DB생성, 분석 가능
+- /list-csv : csv 파일 리스팅 (삭제 예정)
+- /codeql-create : CodeQL DB 생성
+- /codeql-analysis : CodeQL DB 분석
+- /result : 각 소스코드별로 취약점 보여주기 (미구현)
+- /status : 취약점 결과 페이지
+- /test : CodeQL 스크립트 리스팅
+
 ## Todo
 - [x] 프로젝트 기획
 - [x] 어떤 Framework 쓸지 선정
@@ -46,6 +59,13 @@ sequenceDiagram
 - [x] 백엔드 구현
 - [x] CWE 테스트
 - [x] CWE기반 취약점 텥스트
+
+## 사후 관리
+- [ ] Multi Processing, Multi Threading 적용
+- [ ] Python 분석 추가
+- [ ] Java 분석 추가
+- [ ] C/C++ 분석 추가
+- [ ] Go 분석 추가
 
 ## CWE
 - [CWE coverage for Python](https://codeql.github.com/codeql-query-help/codeql-cwe-coverage/)
