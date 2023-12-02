@@ -142,12 +142,13 @@ def analyze_db(dirname):
         ql_scripts = get_ql_scripts()
         for ql_script in ql_scripts:
             script_name = ql_script.split('/')[-1].split('.ql')[0]
-            command = f'codeql database analyze --format=csv --output={CSV_PATH}{dirname}-{script_name}.csv --threads=2 {DB_PATH}{dirname} {ql_script}'
-            print(command)
+            # command = f'codeql database analyze --format=csv --output={CSV_PATH}{dirname}-{script_name}.csv --threads=2 {DB_PATH}{dirname} {ql_script}'
+            command = f'codeql database analyze --format=csv --output={CSV_PATH}{dirname}-{script_name}.csv --threads=1 {DB_PATH}{dirname} {ql_script}'
+            print("!!!!!!!!!", command)
             # command = f'codeql database analyze --format=csv --output={CSV_PATH}{dirname}.csv --threads=2 {DB_PATH}{dirname} {ql_script}'
             # codeql database analyze --format=csv --output=/root/VulnFinder-CodeQL/src/codeql-csv/cwe-079.csv --threads=2 /root/VulnFinder-CodeQL/src/codeql-db/CWE-079-383a5975 /root/CodeQL/codeql/qlpacks/codeql/javascript-queries/0.8.3/Declarations/UnusedVariable.ql
             # codeql database analyze --format=csv --output=/root/VulnFinder-CodeQL/src/codeql-csv/cwe-079.csv --threads=2 /root/VulnFinder-CodeQL/src/codeql-db/CWE-079-383a5975 /root/CodeQL/codeql/qlpacks/codeql/javascript-queries/0.8.3/Security/CWE-079/ReflectedXss.ql
-            process = Popen(command, shell=False)
+            process = Popen(command, shell=True)
             process.wait()
             if os.path.exists(f'{CSV_PATH}{dirname}-{script_name}.csv'):
                 read_csv_and_update_db(f'{CSV_PATH}{dirname}-{script_name}.csv')
