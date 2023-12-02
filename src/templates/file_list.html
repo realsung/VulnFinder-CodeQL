@@ -61,10 +61,13 @@
             <tr>
                 <th>Name</th>
                 <th>Status</th>
+                <th>isAnalysis</th>
                 <th>Date</th>
                 <th>Size</th>
                 <th>Path</th>
-                <th>Action</th>
+                <th>Create</th>
+                <th>Analysis</th>
+                <th>Result</th>
             </tr>
         </thead>
         <tbody>
@@ -72,6 +75,7 @@
                 <tr id="file-{{ file.id }}">
                     <td>{{ file.name }}</td>
                     <td>{{ file.status }}</td>
+                    <td>{{ file.isAnalysis }}</td>
                     <td>{{ file.date }}</td>
                     <td>{{ file.size }}</td>
                     <td>{{ file.path }}</td>
@@ -80,6 +84,21 @@
                             <button onclick="createCodeQL('{{ file.id }}', '{{ file.name }}')">Create CodeQL</button>
                         {% else %}
                             <button disabled>CodeQL Created</button>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if file.status == 1 and file.isAnalysis == 0 %}
+                            <button onclick="analysisCodeQL('{{ file.id }}', '{{ file.name }}')">CodeQL Analysis</button>
+                        {% else %}
+                            <button disabled>CodeQL Analysis</button>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if file.status == 1 and file.isAnalysis == 1 %}
+                            <!-- <a href="/result/{{ file.id }}">Result</a> -->
+                            <button onclick="window.open('/result/{{ file.name }}')">Result</button>
+                        {% else %}
+                            <button disabled>Result</button>
                         {% endif %}
                     </td>
                 </tr>
@@ -91,6 +110,21 @@
         function createCodeQL(fileId, fileName) {
             $.ajax({
                 url: '/codeql-create',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ filename: fileName }),
+                success: function(response) {
+                    alert(response.message);
+                    $('#file-' + fileId + ' button').prop('disabled', true);
+                },
+                error: function(error) {
+                    alert(error.responseJSON.message);
+                }
+            });
+        }
+        function analysisCodeQL(fileId, fileName) {
+            $.ajax({
+                url: '/codeql-analysis',
                 type: 'POST',
                 contentType: 'application/json',
                 data: JSON.stringify({ filename: fileName }),

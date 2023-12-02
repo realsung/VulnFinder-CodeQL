@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Status</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2>Report Status</h2>
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Vulnerability Name</th>
+                    <th>Description</th>
+                    <th>Severity</th>
+                    <th>Message</th>
+                    <th>Path</th>
+                    <th>Start Line</th>
+                    <th>Start Column</th>
+                    <th>End Line</th>
+                    <th>End Column</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in data %}
+                <tr>
+                    <td>{{ report.id }}</td>
+                    <td>{{ report.name }}</td>
+                    <td>{{ report.vulnname }}</td>
+                    <td>{{ report.description }}</td>
+                    <td>{{ report.severity }}</td>
+                    <td>{{ report.message }}</td>
+                    <td>{{ report.path }}</td>
+                    <td>{{ report.startline }}</td>
+                    <td>{{ report.startcolumn }}</td>
+                    <td>{{ report.endline }}</td>
+                    <td>{{ report.endcolumn }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.6/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

@@ -48,14 +48,16 @@
 <body>
     <h1>File Upload</h1>
     <form action="/upload" method="post" enctype="multipart/form-data">
+        <p>Input .zip extension!</p>
         <input type="file" name="file" id="file">
-        <input type="submit" value="Upload">
+        <input type="submit" value="Upload File">
     </form>
 
     <h1>URL Input</h1>
     <form action="/upload" method="get">
+        <p>Input github repository link!</p>
         <input type="url" name="url" id="url">
-        <input type="submit" value="Download">
+        <input type="submit" value="Upload Link">
     </form>
 </body>
 </html>
