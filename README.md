@@ -11,7 +11,7 @@ sequenceDiagram
     participant Backend as 백엔드 서비스
     participant CodeQL as CodeQL 쿼리 엔진
 
-    User->>WebService: C언어 코드 업로드
+    User->>WebService: 코드 업로드 및 깃허브 레포지토리 URL 업로드
     WebService->>Backend: 코드 전송
     Backend->>CodeQL: 취약점 탐지 시작
     CodeQL->>Backend: 취약점 보고서 반환
