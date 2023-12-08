@@ -19,6 +19,10 @@ sequenceDiagram
     WebService->>User: 취약점 결과 표시
 ```
 
+## How To Use?
+- /src 폴더내에서 `docker-compose up -d --build`를 수행.
+- codeql은 직접 설치해야함.
+
 ## Development Spec
 - Flask : 백엔드 개발 사용
 - DB : SQLAlchemy
