@@ -3,6 +3,7 @@
 ## Summary
 - CodeQL을 이용해 프로그래밍 언어 기반 소스코드 취약점 찾기 플랫폼 구현
 - 현재 지원 언어 : JavaScript (추후 추가 예정)
+- [1day 취약점 분석 정리](https://github.com/realsung/VulnFinder-CodeQL/blob/main/1day-analysis.md)
 
 ```mermaid
 sequenceDiagram
