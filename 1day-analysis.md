@@ -4,7 +4,7 @@
 
 sprintf과 snprintf의 원형은 아래와 같이 정의되어 있다.
 
-```c
+```ccodeql
 #include <stdio.h>
 int sprintf(char *buffer, const char *format-string, argument-list);
 int snprintf(char *buffer, size_t n, const char *format-string, argument-list);
@@ -113,7 +113,7 @@ if (ret <= 0 || (size_t)ret >= left) {
 
 첫 번째 쿼리는 호출하는 함수 이름이 snprintf면 함수 call과 경고 문구를 반환한다.
 
-```sql
+```codeql
 import cpp // QL Library import 
 
 from FunctionCall call // get FunctionCall type call
@@ -125,7 +125,7 @@ select call, "potentially dangerous call to snprintf." // abort message
 
 첫 번째 쿼리와 다르게 and call 구문이 추가되었다. 새로운 구문을 보면 2번째 인자의 값을 가져와서 정규식으로 %s가 포함되면 함수 call과 경고 문구를 반환한다.
 
-```sql
+```codeql
 from FunctionCall call
 where call.getTarget().getName() = "snprintf"
   and call.getArgument(2).getValue().regexpMatch("(?s).*%s.*")
@@ -138,7 +138,7 @@ select call, "potentially dangerous snprintf."
 
 Taint Analysis는 데이터 플로우 기법을 이용해 snprintf의 리턴 값이 snprintf의 첫 번째 인자로 전달되는 call을 찾아준다. 이렇게 해서 실행 플로우에 영향이 가는 것을 분석해주는 것이다.
 
-```sql
+```codeql
 import semmle.code.cpp.dataflow.TaintTracking
 
 from FunctionCall call
@@ -176,7 +176,7 @@ while (token != NULL) {
 
 위의 if문을 생각해 오탐지를 해결하기 위해 쿼리 4를 짤 수 있다.
 
-```sql
+```codeql
 import cpp
 import semmle.code.cpp.dataflow.TaintTracking
 import semmle.code.cpp.controlflow.Guards
@@ -199,7 +199,7 @@ select call
 
 새로 추가된 쿼리들을 확인해보면 아래와 같다. guard check로 리턴 값이 사용되고 비교연산에 사용되고 조건문에 들어간다면 취약하다고 제어해준다. 
 
-```sql
+```codeql
 import semmle.code.cpp.controlflow.Guards // GuardCondition을 사용하기 위해 import
 
   and not exists(GuardCondition guard, Expr operand |
@@ -213,7 +213,7 @@ import semmle.code.cpp.controlflow.Guards // GuardCondition을 사용하기 위�
 
 이를 통해서 3번 쿼리로는 찾지 못하는 취약점을 4번 쿼리로  `CVE-2018-1000140` 취약점을 찾아낼 수 있었습니다. iAllNames += 해주고 만약 `-iAllNames > sizeof(allNames)` 일 때 `sizeof(allNames)-iAllNames` 을 하면 snprintf가 overflow가 발생하게 됩니다.
 
-```sql
+```c
 iAllNames += snprintf(allNames+iAllNames, sizeof(allNames)-iAllNames,
                       "DNSname: %s; ", szAltName);
 ```
